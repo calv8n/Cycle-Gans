@@ -13,7 +13,7 @@ from generator import Generator
 
 
 def train_fn(
-    disc_H, disc_Z, gen_Z, gen_H, loader, opt_disc, opt_gen, l1, mse, d_scaler, g_scaler
+    disc_H, disc_Z, gen_Z, gen_H, loader, opt_disc, opt_gen, l1, mse, d_scaler, g_scaler, epoch
 ):
     H_reals = 0
     H_fakes = 0
@@ -77,9 +77,9 @@ def train_fn(
         g_scaler.step(opt_gen)
         g_scaler.update()
 
-        if idx % 200 == 0:
-            save_image(fake_horse * 0.5 + 0.5, f"saved_images/apple_{idx}.png")
-            save_image(fake_zebra * 0.5 + 0.5, f"saved_images/orange _{idx}.png")
+        if idx % 5 == 0:
+            save_image(fake_horse * 0.5 + 0.5, f"saved_images_3/monet_{idx}_epoch={epoch}.png")
+            save_image(fake_zebra * 0.5 + 0.5, f"saved_images_3/pic _{idx}_epoch={epoch}.png")
 
         loop.set_postfix(H_real=H_reals / (idx + 1), H_fake=H_fakes / (idx + 1))
 
@@ -131,13 +131,13 @@ def main():
         )
 
     dataset = HorseZebraDataset(
-        root_horse=config.TRAIN_DIR + "/apple",
-        root_zebra=config.TRAIN_DIR + "/orange",
+        root_horse=config.TRAIN_DIR,
+        root_zebra=config.VAL_DIR,
         transform=config.transforms,
     )
     val_dataset = HorseZebraDataset(
-        root_horse="data/val/apples",
-        root_zebra="data/val/oranges",
+        root_horse="dataset/testA",
+        root_zebra="dataset/testB",
         transform=config.transforms,
     )
     val_loader = DataLoader(
@@ -169,6 +169,7 @@ def main():
             mse,
             d_scaler,
             g_scaler,
+            epoch,
         )
 
         if config.SAVE_MODEL:
